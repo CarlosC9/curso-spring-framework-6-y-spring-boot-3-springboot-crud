@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -40,7 +41,7 @@ public class ProductController {
     Optional<Product> productOptional = this.productService.findById(id);
 
     if (productOptional.isEmpty()) {
-      ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("status", 404));
     }
 
     return ResponseEntity.status(HttpStatus.OK).body(productOptional.orElseThrow());
@@ -59,8 +60,9 @@ public class ProductController {
     @PathVariable Long id,
     @RequestBody Product product
   ) {
-    Product newProduct = this.productService.save(product);
-    return ResponseEntity.status(HttpStatus.CREATED).body(newProduct);
+    product.setId(id);
+    Product upodatedProduct = this.productService.save(product);
+    return ResponseEntity.status(HttpStatus.CREATED).body(upodatedProduct);
   }
 
   @DeleteMapping("/{id}")
@@ -71,7 +73,7 @@ public class ProductController {
     product.setId(id);
     Optional<Product> productOptional = this.productService.remove(product);
     if (productOptional.isEmpty()) {
-      return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("status", 404));
     }
 
     return ResponseEntity.status(HttpStatus.OK).body(productOptional.orElseThrow());
