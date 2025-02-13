@@ -6,6 +6,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.naming.Binding;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -49,18 +52,26 @@ public class ProductController {
   }
 
   @PostMapping
-  public ResponseEntity<Product> create(
-    @Valid @RequestBody Product product
+  public ResponseEntity<?> create(
+    @Valid @RequestBody Product product,
+    BindingResult result
   ) {
+    if (result.hasFieldErrors()) {
+      return this.validation(result);
+    }
     Product newProduct = this.productService.save(product);
     return ResponseEntity.status(HttpStatus.CREATED).body(newProduct);
   }
 
   @PutMapping("/{id}")
   public ResponseEntity<?> update(
-    @PathVariable Long id,
-    @Valid @RequestBody Product product
+    @Valid @RequestBody Product product,
+    BindingResult result,
+    @PathVariable Long id
   ) {
+    if (result.hasFieldErrors()) {
+      return this.validation(result);
+    }
     Optional<Product> optionalProduct = this.productService.update(id, product);
 
     if (optionalProduct.isEmpty()) {
@@ -82,5 +93,13 @@ public class ProductController {
     }
 
     return ResponseEntity.status(HttpStatus.OK).body(productOptional.orElseThrow());
+  }
+
+  private ResponseEntity<Map<String, Object>> validation(BindingResult result) {
+    Map<String, Object> errors = new HashMap<>();
+    result.getFieldErrors().forEach(err -> {
+      errors.put(err.getField(), "El campo " + err.getField() + " " + err.getDefaultMessage());
+    });
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
   }
 }

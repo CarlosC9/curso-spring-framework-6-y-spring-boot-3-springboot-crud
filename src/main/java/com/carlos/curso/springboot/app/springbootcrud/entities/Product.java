@@ -32,6 +32,7 @@ public class Product {
   private Integer price;
 
   @NotEmpty
+  @NotBlank
   private String description;
 
   public Product() {
