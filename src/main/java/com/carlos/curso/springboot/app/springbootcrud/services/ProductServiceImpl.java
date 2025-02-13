@@ -14,6 +14,11 @@ public class ProductServiceImpl implements ProductService {
 
   private ProductRepository productRepository;
 
+  @Autowired
+  public void setProductRepository(ProductRepository productRepository) {
+    this.productRepository = productRepository;
+  }
+
   @Override
   @Transactional(readOnly = true)
   public List<Product> findAll() {
@@ -32,18 +37,27 @@ public class ProductServiceImpl implements ProductService {
     return this.productRepository.save(product);
   }
 
+  @Transactional
+  @Override
+  public Optional<Product> update(Long id, Product product) {
+    Optional<Product> productOptional = this.productRepository.findById(id);
+    if (productOptional.isPresent()) {
+      Product productDb = productOptional.orElseThrow();
+      productDb.setName(product.getName());
+      productDb.setDescription(product.getDescription());
+      productDb.setPrice(product.getPrice());
+      return Optional.of(this.productRepository.save(productDb));
+    }
+    return productOptional;
+  }
+
   @Override
   @Transactional
-  public Optional<Product> remove(Product product) {
-    Optional<Product> productOptional = this.productRepository.findById(product.getId());
+  public Optional<Product> remove(Long id) {
+    Optional<Product> productOptional = this.productRepository.findById(id);
     productOptional.ifPresent(productDb -> {
       this.productRepository.delete(productDb);
     });
     return productOptional;
-  }
-
-  @Autowired
-  public void setProductRepository(ProductRepository productRepository) {
-    this.productRepository = productRepository;
   }
 }

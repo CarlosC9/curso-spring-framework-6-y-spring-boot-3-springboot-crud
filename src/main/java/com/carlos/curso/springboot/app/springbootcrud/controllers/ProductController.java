@@ -56,13 +56,17 @@ public class ProductController {
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<Product> update(
+  public ResponseEntity<?> update(
     @PathVariable Long id,
     @RequestBody Product product
   ) {
-    product.setId(id);
-    Product upodatedProduct = this.productService.save(product);
-    return ResponseEntity.status(HttpStatus.CREATED).body(upodatedProduct);
+    Optional<Product> optionalProduct = this.productService.update(id, product);
+
+    if (optionalProduct.isEmpty()) {
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("status", 404));
+    }
+
+    return ResponseEntity.status(HttpStatus.CREATED).body(optionalProduct.orElseThrow());
   }
 
   @DeleteMapping("/{id}")
@@ -71,7 +75,7 @@ public class ProductController {
   ) {
     Product product = new Product();
     product.setId(id);
-    Optional<Product> productOptional = this.productService.remove(product);
+    Optional<Product> productOptional = this.productService.remove(id);
     if (productOptional.isEmpty()) {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("status", 404));
     }
