@@ -8,5 +8,6 @@ CREATE TABLE products (
   name varchar(45) not null,
   price int not null,
   description text not null,
+  sku varchar(45),
   primary key (id)
 );

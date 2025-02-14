@@ -1,13 +1,14 @@
 package com.carlos.curso.springboot.app.springbootcrud.entities;
 
+import com.carlos.curso.springboot.app.springbootcrud.validation.IsExistsDb;
 import com.carlos.curso.springboot.app.springbootcrud.validation.IsRequired;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
+//import jakarta.validation.constraints.NotBlank;
+//import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
@@ -32,6 +33,10 @@ public class Product {
 
   @IsRequired
   private String description;
+
+  @IsRequired
+  @IsExistsDb
+  private String sku;
 
   public Product() {
   }
@@ -72,6 +77,14 @@ public class Product {
 
   public void setDescription(String description) {
     this.description = description;
+  }
+
+  public String getSku() {
+    return sku;
+  }
+
+  public void setSku(String sku) {
+    this.sku = sku;
   }
 
   @Override

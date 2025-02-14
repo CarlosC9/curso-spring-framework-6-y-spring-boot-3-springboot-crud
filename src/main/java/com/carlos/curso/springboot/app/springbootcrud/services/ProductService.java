@@ -17,4 +17,6 @@ public interface ProductService {
 
   Optional<Product> remove(Long id);
 
+  boolean existsBySku(String sku);
+
 }
