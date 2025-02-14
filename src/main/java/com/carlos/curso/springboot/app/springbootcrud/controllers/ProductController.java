@@ -64,7 +64,7 @@ public class ProductController {
     @Valid @RequestBody Product product,
     BindingResult result
   ) {
-    this.productValidation.validate(product, result);
+//    this.productValidation.validate(product, result);
     if (result.hasFieldErrors()) {
       return this.validation(result);
     }
@@ -78,7 +78,7 @@ public class ProductController {
     BindingResult result,
     @PathVariable Long id
   ) {
-    this.productValidation.validate(product, result);
+//    this.productValidation.validate(product, result);
     if (result.hasFieldErrors()) {
       return this.validation(result);
     }
